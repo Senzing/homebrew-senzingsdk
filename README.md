@@ -1,2 +1,5 @@
 # homebrew-senzingsdk
-A repo to publish Senzing SDK releases for Homebrew
+
+## Synopsis
+
+A repo to publish Senzing SD for Homebrew
