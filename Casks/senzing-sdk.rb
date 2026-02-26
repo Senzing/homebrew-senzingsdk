@@ -1,6 +1,6 @@
 cask "senzing-sdk" do
-  version "4.0.0.25055"
-  sha256 "bdc842aded49fb602b626656a0d8102a2e127916bd4c0afd7102079c8183374b"
+  version "4.0.0.25057"
+  sha256 "0c4bd377fde5ad4c371e6d2f0a511927f31c60d46273c778cf50310faeb495f7"
 
   url "https://senzing-staging-osx.s3.amazonaws.com/senzingsdk_#{version}.pkg"
 
@@ -27,7 +27,7 @@ cask "senzing-sdk" do
 
       EOS
       print "Do you accept the license terms? [yes/no]: "
-      response = $stdin.gets&.chomp&.downcase.to_s     
+      response = $stdin.gets&.chomp&.downcase.to_s
       unless %w[y yes 1 true].include?(response)
         raise Cask::CaskError, "License not accepted. Installation aborted."
       end
