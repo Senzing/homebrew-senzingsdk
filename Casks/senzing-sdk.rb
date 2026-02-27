@@ -45,7 +45,7 @@ cask "senzing-sdk" do
 
     # Write marker file so the PKG preinstall script knows the EULA was accepted.
     # sudo installer strips env vars, so we use a file to pass acceptance through.
-    File.write("/tmp/.senzing_eula_accepted", "")
+    File.write("/tmp/.senzing_eula_accepted", Time.now.to_i.to_s)
   end
 
   pkg "senzingsdk_#{version}.pkg"
