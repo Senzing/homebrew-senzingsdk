@@ -26,6 +26,16 @@ cask "senzing-sdk" do
           HOMEBREW_SENZING_ACCEPT_EULA=i_accept_the_senzing_eula
 
       EOS
+      unless $stdin.tty?
+        ohai "No interactive terminal detected."
+        puts <<~EOS
+
+          To accept the Senzing EULA non-interactively, run:
+            HOMEBREW_SENZING_ACCEPT_EULA=i_accept_the_senzing_eula brew install --cask senzing-sdk
+
+        EOS
+        raise Cask::CaskError, "EULA acceptance required. See instructions above."
+      end
       print "Do you accept the license terms? [yes/no]: "
       response = $stdin.gets&.chomp&.downcase.to_s
       unless %w[y yes 1 true].include?(response)
