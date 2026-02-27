@@ -1,6 +1,6 @@
 cask "senzing-sdk" do
   version "4.0.0.25057"
-  sha256 "0c4bd377fde5ad4c371e6d2f0a511927f31c60d46273c778cf50310faeb495f7"
+  sha256 "742c4cb6571044d88932208ab9af69dd3c8a334f4e279a8676ea7d5a1b773813"
 
   url "https://senzing-staging-osx.s3.amazonaws.com/senzingsdk_#{version}.pkg"
 
