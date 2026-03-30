@@ -1,6 +1,13 @@
 cask "senzing-sdk" do
-  version "4.3.0.26057"
-  sha256 "742c4cb6571044d88932208ab9af69dd3c8a334f4e279a8676ea7d5a1b773813"
+  override_version = ENV["HOMEBREW_SENZING_SDK_VERSION"]
+
+  if override_version && !override_version.empty?
+    version override_version
+    sha256 :no_check
+  else
+    version "4.3.0.26057"
+    sha256 "742c4cb6571044d88932208ab9af69dd3c8a334f4e279a8676ea7d5a1b773813"
+  end
 
   url "https://senzing-staging-osx.s3.amazonaws.com/senzingsdk_#{version}.pkg"
 
