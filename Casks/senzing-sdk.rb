@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 cask "senzing-sdk" do
   override_version = ENV["HOMEBREW_SENZING_SDK_VERSION"]
 
