@@ -13,6 +13,9 @@ cask "senzing-sdk" do
 
   url "https://senzing-staging-osx.s3.amazonaws.com/senzingsdk_#{version}.pkg"
 
+  depends_on formula: "sqlite"
+  depends_on formula: "openssl@3"
+
   name "Senzing SDK"
   desc "Senzing® Smarter Entity Resolution™ SDK with Entity Centric Learning™ technology. Connect Data. Power Intelligence.™ entity resolution."
   homepage "https://senzing.com"
