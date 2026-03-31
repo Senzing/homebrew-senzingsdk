@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-cask "senzing-sdk" do
+cask "senzingsdk" do
   override_version = ENV["HOMEBREW_SENZING_SDK_VERSION"]
 
   if override_version && !override_version.empty?
@@ -43,7 +43,7 @@ cask "senzing-sdk" do
         puts <<~EOS
 
           To accept the Senzing EULA non-interactively, run:
-            HOMEBREW_SENZING_ACCEPT_EULA=i_accept_the_senzing_eula brew install --cask senzing-sdk
+            HOMEBREW_SENZING_ACCEPT_EULA=i_accept_the_senzing_eula brew install --cask senzingsdk
 
         EOS
         raise ::Cask::CaskError, "EULA acceptance required. See instructions above."
