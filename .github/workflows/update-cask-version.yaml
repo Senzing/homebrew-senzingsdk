@@ -1,3 +1,4 @@
+# checkov:skip=CKV_GHA_7:workflow_dispatch input is required to specify the version to update
 name: update cask version
 
 on:
@@ -19,10 +20,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Verify package exists on S3
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
-          PKG_URL="https://senzing-staging-osx.s3.amazonaws.com/senzingsdk_${{ inputs.version }}.pkg"
+          PKG_URL="https://senzing-staging-osx.s3.amazonaws.com/senzingsdk_${VERSION}.pkg"
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --head "$PKG_URL")
           if [ "$HTTP_STATUS" != "200" ]; then
             echo "::error::Package not found at $PKG_URL (HTTP $HTTP_STATUS)"
@@ -39,28 +44,31 @@ jobs:
           rm senzingsdk.pkg
 
       - name: Update cask file
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
-          sed -i 's/version ".*"/version "${{ inputs.version }}"/' Casks/senzingsdk.rb
-          sed -i 's/sha256 ".*"/sha256 "'"$SHA256"'"/' Casks/senzingsdk.rb
+          sed -i "s/version \".*\"/version \"${VERSION}\"/" Casks/senzingsdk.rb
+          sed -i "s/sha256 \".*\"/sha256 \"${SHA256}\"/" Casks/senzingsdk.rb
 
       - name: Create pull request
         env:
           GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
         run: |
-          BRANCH="cask-update-${{ inputs.version }}"
+          BRANCH="cask-update-${VERSION}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
           git add Casks/senzingsdk.rb
-          git commit -m "Update senzingsdk cask to ${{ inputs.version }}"
+          git commit -m "Update senzingsdk cask to ${VERSION}"
           git push origin "$BRANCH"
           gh pr create \
-            --title "Update senzingsdk cask to ${{ inputs.version }}" \
+            --title "Update senzingsdk cask to ${VERSION}" \
             --body "$(cat <<EOF
           Automated update of senzingsdk cask.
 
-          - **Version:** \`${{ inputs.version }}\`
-          - **SHA256:** \`$SHA256\`
-          - **Package URL:** \`$PKG_URL\`
+          - **Version:** \`${VERSION}\`
+          - **SHA256:** \`${SHA256}\`
+          - **Package URL:** \`${PKG_URL}\`
           EOF
           )"
