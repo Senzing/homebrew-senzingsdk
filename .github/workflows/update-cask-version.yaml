@@ -54,10 +54,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ inputs.version }}
+          REPOSITORY: ${{ github.repository }}
         run: |
           BRANCH="cask-update-${VERSION}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git"
           git checkout -b "$BRANCH"
           git add Casks/senzingsdk.rb
           git commit -m "Update senzingsdk cask to ${VERSION}"
