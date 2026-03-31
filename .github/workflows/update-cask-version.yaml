@@ -1,6 +1,6 @@
-# checkov:skip=CKV_GHA_7:workflow_dispatch input is required to specify the version to update
 name: update cask version
 
+# checkov:skip=CKV_GHA_7:workflow_dispatch input is required to specify the version to update
 on:
   workflow_dispatch:
     inputs:
