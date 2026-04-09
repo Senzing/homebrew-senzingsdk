@@ -47,8 +47,8 @@ jobs:
         env:
           VERSION: ${{ inputs.version }}
         run: |
-          sed -i "s/version \".*\"/version \"${VERSION}\"/" Casks/senzingsdk.rb
-          sed -i "s/sha256 \".*\"/sha256 \"${SHA256}\"/" Casks/senzingsdk.rb
+          sed -i "s/version \"[0-9][0-9.]*\"/version \"${VERSION}\"/" Casks/senzingsdk.rb
+          sed -i "s/sha256 \"[0-9a-f]\{64\}\"/sha256 \"${SHA256}\"/" Casks/senzingsdk.rb
 
       - name: Create pull request
         env:

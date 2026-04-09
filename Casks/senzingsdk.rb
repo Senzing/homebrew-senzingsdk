@@ -59,9 +59,8 @@ cask "senzingsdk" do
   stage_only true
 
   postflight do
-    homebrew_prefix = ENV.fetch("HOMEBREW_PREFIX", "/opt/homebrew")
-    caskroom_senzing = "#{homebrew_prefix}/Caskroom/senzingsdk/#{version}/senzing"
-    symlink_path = "#{homebrew_prefix}/opt/senzing"
+    caskroom_senzing = "#{HOMEBREW_PREFIX}/Caskroom/senzingsdk/#{version}/senzing"
+    symlink_path = "#{HOMEBREW_PREFIX}/opt/senzing"
 
     require "pathname"
     relative_target = Pathname.new(caskroom_senzing).relative_path_from(Pathname.new(symlink_path).parent)
