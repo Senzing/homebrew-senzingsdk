@@ -11,14 +11,14 @@ cask "senzingsdk" do
     sha256 "87782fd834bb386c14c7b38d4e4bb783a2d20b28d6358cbabb86c8951568c75d"
   end
 
-  url "https://senzing-staging-osx.s3.amazonaws.com/senzingsdk_#{version}.pkg"
-
-  depends_on formula: "sqlite"
-  depends_on formula: "openssl@3"
+  url "https://senzing-production-osx.s3.amazonaws.com/senzingsdk_#{version}.dmg"
 
   name "Senzing SDK"
   desc "Senzing® Smarter Entity Resolution™ SDK with Entity Centric Learning™ technology. Connect Data. Power Intelligence.™ entity resolution."
   homepage "https://senzing.com"
+
+  depends_on formula: "sqlite"
+  depends_on formula: "openssl@3"
 
   preflight do
     eula_env = ENV.fetch("HOMEBREW_SENZING_ACCEPT_EULA", "")
@@ -54,14 +54,39 @@ cask "senzingsdk" do
         raise ::Cask::CaskError, "License not accepted. Installation aborted."
       end
     end
-
-    # Write marker file so the PKG preinstall script knows the EULA was accepted.
-    # sudo installer strips env vars, so we use a file to pass acceptance through.
-    File.write("/tmp/.senzing_eula_accepted", Time.now.to_i.to_s)
   end
 
-  pkg "senzingsdk_#{version}.pkg"
+  stage_only true
 
-  uninstall pkgutil: "com.senzing.sdk",
-            delete:  ["/opt/senzing", "/opt/senzingsdk.pkg"]
+  postflight do
+    caskroom_senzing = "#{HOMEBREW_PREFIX}/Caskroom/senzingsdk/#{version}/senzing"
+    symlink_path = "#{HOMEBREW_PREFIX}/opt/senzing"
+
+    require "pathname"
+    relative_target = Pathname.new(caskroom_senzing).relative_path_from(Pathname.new(symlink_path).parent)
+    FileUtils.rm_f(symlink_path)
+    FileUtils.ln_sf(relative_target.to_s, symlink_path)
+  end
+
+  uninstall_postflight do
+    symlink_path = "#{HOMEBREW_PREFIX}/opt/senzing"
+    FileUtils.rm_f(symlink_path)
+  end
+
+  caveats <<~EOS
+    The Senzing SDK has been installed to:
+      #{HOMEBREW_PREFIX}/Caskroom/senzingsdk/#{version}/senzing
+
+    A symlink has been created at:
+      #{HOMEBREW_PREFIX}/opt/senzing
+
+    Add these to your shell configuration (~/.zshrc or ~/.bash_profile):
+
+      export SENZING_ROOT="#{HOMEBREW_PREFIX}/opt/senzing/er"
+      export DYLD_LIBRARY_PATH="${SENZING_ROOT}/lib:$DYLD_LIBRARY_PATH"
+      export PATH="${SENZING_ROOT}/bin:$PATH"
+
+    Or source the provided setup script:
+      source "#{HOMEBREW_PREFIX}/opt/senzing/er/setupEnv"
+  EOS
 end
