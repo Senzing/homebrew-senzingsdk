@@ -8,4 +8,4 @@
 
 ## Synopsis
 
-A repo to publish Senzing SD for Homebrew
+A repository to publish Senzing SDK for Homebrew
