@@ -8,11 +8,14 @@
     "CODEOWNER",
     "CODEOWNERS",
     "cooldown",
+    "DYLD",
     "esbenp",
     "ICLA",
     "kernelsam",
     "Senzing",
+    "senzingsdk",
     "stackoverflow",
+    "untap",
     "zizmor"
   ],
   "ignorePaths": [".git/**"]
