@@ -7,8 +7,8 @@ cask "senzingsdk" do
     version override_version
     sha256 :no_check
   else
-    version "4.3.0.26126"
-    sha256 "5e94cfce3a3c0e6312c2a21722dc7d235441511aeea660081891ed08d3f029af"
+    version "4.3.0.26135"
+    sha256 "424b8331483fcc7b5fb37a5f069400547ea6627da5980bb97fdc6463e813e8a8"
   end
 
   url "https://senzing-production-osx.s3.amazonaws.com/senzingsdk_#{version}.dmg"
