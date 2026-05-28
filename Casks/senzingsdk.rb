@@ -81,7 +81,7 @@ cask "senzingsdk" do
     unless Dir.exist?(payload_senzing)
       found = Dir.children(expanded_dir).sort.join(", ")
       raise ::Cask::CaskError,
-            "No senzing/ directory found at #{payload_senzing} " \
+            "No senzing/ directory found at #{payload_senzing}. " \
             "Top level contains: #{found}"
     end
 
