@@ -10,7 +10,6 @@ This project adheres to [Semantic Versioning].
 ### Changed in 0.1.0
 
 - Install the Senzing SDK from the `.pkg` artifact instead of the `.dmg`. The resulting Caskroom layout and `/opt/homebrew/opt/senzing` symlink are unchanged from previous releases.
-- Updated `sha256` to match the new `.pkg` artifact for `4.3.0.26135`.
 - `update-cask-version.yaml` workflow now fetches and hashes the `.pkg` rather than the `.dmg` on automated version bumps.
 
 ### Added to 0.1.0
