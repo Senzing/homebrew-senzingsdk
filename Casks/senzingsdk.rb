@@ -110,12 +110,6 @@ cask "senzingsdk" do
   end
 
   caveats <<~EOS
-    ════════════════════════════════════════════════════════════
-    PREVIEW RELEASE — UNSUPPORTED
-    ════════════════════════════════════════════════════════════
-    This cask is a preview release. It is provided as-is with no
-    warranty and is NOT supported.
-
     The Senzing SDK has been installed to:
       #{HOMEBREW_PREFIX}/Caskroom/senzingsdk/#{version}/senzing
 
