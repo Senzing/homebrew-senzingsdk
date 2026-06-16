@@ -16,6 +16,7 @@
     "postflight",
     "Senzing",
     "senzingsdk",
+    "shellcheck",
     "stackoverflow",
     "untap",
     "zizmor"
