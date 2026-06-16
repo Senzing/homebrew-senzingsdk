@@ -68,6 +68,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
         run: |
+          # The GraphQL variable ($input) and jq variables ($query, $repo, ...) below are
+          # intentionally single-quoted literals, not shell expansions.
+          # shellcheck disable=SC2016
           set -euo pipefail
 
           BRANCH="cask-update-${VERSION}"
