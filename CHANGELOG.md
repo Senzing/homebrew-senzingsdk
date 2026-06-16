@@ -7,13 +7,13 @@ This project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
-### Fixed
-
-- The `update-cask-version.yaml` workflow now creates signed (verified) commits via the GitHub API instead of unsigned local commits.
-
 ### Added
 
 - The `update-cask-version.yaml` workflow now validates the dispatched version and also accepts the hyphen-before-build format (e.g. `4.3.2-26162`), normalizing it to the canonical dot form (`4.3.2.26162`).
+
+### Fixed
+
+- The `update-cask-version.yaml` workflow now creates signed (verified) commits via the GitHub API instead of unsigned local commits.
 
 ## [0.1.0] - 2026-05-28
 
