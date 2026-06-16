@@ -23,9 +23,24 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Verify package exists on S3
+      - name: Validate and normalize version
         env:
-          VERSION: ${{ inputs.version }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          # Validate the input to prevent injection via the workflow_dispatch input.
+          # Accept both the dot form (4.3.2.26162) and the hyphen-before-build form (4.3.2-26162).
+          if [[ ! "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+[.-][0-9]+$ ]]; then
+            echo "::error::Invalid version format: '$INPUT_VERSION'. Expected <major>.<minor>.<patch>.<build>, e.g. 4.3.2.26162 or 4.3.2-26162."
+            exit 1
+          fi
+          # Normalize to the canonical dot form used in the cask and S3 object key.
+          # After this, VERSION holds only digits and dots, so it is safe to interpolate
+          # into the S3 key, branch name, and commit message downstream.
+          VERSION="${INPUT_VERSION//-/.}"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Verify package exists on S3
         run: |
           PKG_URL="https://senzing-production-osx.s3.amazonaws.com/senzingsdk_${VERSION}.pkg"
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --head "$PKG_URL")
@@ -44,29 +59,62 @@ jobs:
           rm senzingsdk.pkg
 
       - name: Update cask file
-        env:
-          VERSION: ${{ inputs.version }}
         run: |
           sed -i "s/version \"[0-9][0-9.]*\"/version \"${VERSION}\"/" Casks/senzingsdk.rb
           sed -i "s/sha256 \"[0-9a-f]\{64\}\"/sha256 \"${SHA256}\"/" Casks/senzingsdk.rb
 
-      - name: Create pull request
+      - name: Create signed commit and pull request
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ inputs.version }}
           REPOSITORY: ${{ github.repository }}
         run: |
+          set -euo pipefail
+
           BRANCH="cask-update-${VERSION}"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git"
-          git checkout -b "$BRANCH"
-          git add Casks/senzingsdk.rb
-          git commit -m "Update senzingsdk cask to ${VERSION}"
-          git push origin "$BRANCH"
-          gh pr create \
-            --title "Update senzingsdk cask to ${VERSION}" \
-            --body "$(cat <<EOF
+          CASK="Casks/senzingsdk.rb"
+
+          # Base the branch on main's current head so re-runs start clean (one commit on top of main)
+          MAIN_SHA=$(gh api "repos/${REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+
+          # Create or reset the remote branch to main's head.
+          # PATCH fails if the branch doesn't exist yet, so fall back to creating it.
+          if ! gh api -X PATCH "repos/${REPOSITORY}/git/refs/heads/${BRANCH}" -f sha="$MAIN_SHA" -F force=true >/dev/null 2>&1; then
+            gh api -X POST "repos/${REPOSITORY}/git/refs" -f ref="refs/heads/${BRANCH}" -f sha="$MAIN_SHA" >/dev/null
+          fi
+
+          # Commit the updated cask via the GraphQL API so GitHub signs the commit
+          # (shows as "Verified"); a local `git commit` would be unsigned.
+          CONTENTS=$(base64 -w0 "$CASK")
+          QUERY='mutation($input: CreateCommitOnBranchInput!) { createCommitOnBranch(input: $input) { commit { oid url } } }'
+          BODY=$(jq -n \
+            --arg query "$QUERY" \
+            --arg repo "$REPOSITORY" \
+            --arg branch "$BRANCH" \
+            --arg headline "Update senzingsdk cask to ${VERSION}" \
+            --arg oid "$MAIN_SHA" \
+            --arg path "$CASK" \
+            --arg contents "$CONTENTS" \
+            '{query: $query, variables: {input: {branch: {repositoryNameWithOwner: $repo, branchName: $branch}, message: {headline: $headline}, expectedHeadOid: $oid, fileChanges: {additions: [{path: $path, contents: $contents}]}}}}')
+
+          # gh exits non-zero on GraphQL errors, and a missing OID catches any
+          # partial-success response that still returns exit 0.
+          COMMIT_OID=$(printf '%s' "$BODY" | gh api graphql --input - --jq '.data.createCommitOnBranch.commit.oid')
+          if [ -z "$COMMIT_OID" ]; then
+            echo "::error::Failed to create signed commit on ${BRANCH} via createCommitOnBranch."
+            exit 1
+          fi
+          echo "Created signed commit ${COMMIT_OID} on ${BRANCH}"
+
+          # If a PR already exists for this branch, the commit above just updated it; skip creation
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --base main --state open --json url --jq '.[0].url')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR already exists for ${BRANCH}, updated by the new commit: ${EXISTING_PR}"
+          else
+            gh pr create \
+              --base main \
+              --head "$BRANCH" \
+              --title "Update senzingsdk cask to ${VERSION}" \
+              --body "$(cat <<EOF
           Automated update of senzingsdk cask.
 
           - **Version:** \`${VERSION}\`
@@ -74,3 +122,4 @@ jobs:
           - **Package URL:** \`${PKG_URL}\`
           EOF
           )"
+          fi

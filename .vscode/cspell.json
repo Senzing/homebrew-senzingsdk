@@ -12,6 +12,7 @@
     "esbenp",
     "ICLA",
     "kernelsam",
+    "pipefail",
     "postflight",
     "Senzing",
     "senzingsdk",
