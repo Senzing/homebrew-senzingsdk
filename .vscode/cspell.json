@@ -12,9 +12,11 @@
     "esbenp",
     "ICLA",
     "kernelsam",
+    "pipefail",
     "postflight",
     "Senzing",
     "senzingsdk",
+    "shellcheck",
     "stackoverflow",
     "untap",
     "zizmor"
