@@ -54,6 +54,44 @@ Alternatively, source the setup script provided with the SDK:
 source "$(brew --prefix)/opt/senzing/er/setupEnv"
 ```
 
+Note that neither the exports above nor `setupEnv` set an engine
+configuration — see the next section.
+
+## Configure the Senzing engine
+
+The SDK is initialized with an engine configuration string. Most examples and
+POC tools read it from `SENZING_ENGINE_CONFIGURATION_JSON`:
+
+```sh
+export SENZING_ENGINE_CONFIGURATION_JSON='{
+  "PIPELINE": {
+    "CONFIGPATH": "'"$(brew --prefix)"'/opt/senzing/er/etc",
+    "RESOURCEPATH": "'"$(brew --prefix)"'/opt/senzing/er/resources",
+    "SUPPORTPATH": "'"$(brew --prefix)"'/opt/senzing/data"
+  },
+  "SQL": {
+    "CONNECTION": "sqlite3://na:na@'"$(brew --prefix)"'/opt/senzing/er/var/sqldb/G2C.db"
+  }
+}'
+```
+
+**`SUPPORTPATH` is not under `SENZING_ROOT`.** `SENZING_ROOT` points at the
+`er` directory, but the support data is `er`'s *sibling*:
+
+```
+$(brew --prefix)/opt/senzing/
+├── er/          <- SENZING_ROOT
+│   ├── etc/         -> CONFIGPATH
+│   └── resources/   -> RESOURCEPATH
+└── data/        <- SUPPORTPATH (a sibling of er, not inside it)
+```
+
+`CONFIGPATH` and `RESOURCEPATH` are under `er`, so deriving them from
+`${SENZING_ROOT}` is correct. `SUPPORTPATH` is the exception:
+`${SENZING_ROOT}/data` resolves to `.../opt/senzing/er/data`, which does not
+exist, and the engine then fails with `SENZ7426` on the first `SzEngine` or
+`SzDiagnostic` call. See [docs/errors.md](docs/errors.md#senz7426).
+
 ## Upgrade
 
 ```sh

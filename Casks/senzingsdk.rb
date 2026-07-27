@@ -124,5 +124,18 @@ cask "senzingsdk" do
 
     Or source the provided setup script:
       source "#{HOMEBREW_PREFIX}/opt/senzing/er/setupEnv"
+
+    Neither the exports above nor setupEnv set an engine configuration.
+    When you build one, note that SUPPORTPATH is NOT under SENZING_ROOT --
+    the support data is a sibling of the "er" directory:
+
+      CONFIGPATH   #{HOMEBREW_PREFIX}/opt/senzing/er/etc
+      RESOURCEPATH #{HOMEBREW_PREFIX}/opt/senzing/er/resources
+      SUPPORTPATH  #{HOMEBREW_PREFIX}/opt/senzing/data     <-- not er/data
+
+    ${SENZING_ROOT}/data does not exist. Using it -- or copying SUPPORTPATH
+    out of er/etc/sz_engine_config.ini, which ships the same wrong value --
+    makes every SzEngine/SzDiagnostic call fail with SENZ7426, while
+    SzProduct keeps working. See docs/errors.md in the tap.
   EOS
 end
