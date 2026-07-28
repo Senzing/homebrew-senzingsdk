@@ -69,5 +69,5 @@ libraries in particular causes further, harder-to-diagnose failures.)
 **Affected versions.** The wrong `SUPPORTPATH` in the shipped `.ini` files is
 present in at least `4.3.2.26162`, `4.3.3.26191` and `4.4.0.26206`, on both the
 production and staging channels. The native macOS install works correctly once
-`SUPPORTPATH` is set properly — verified end to end (`getEngine()` +
+`SUPPORTPATH` is set properly — verified end-to-end (`getEngine()` +
 `addRecord()`) on Apple Silicon.
