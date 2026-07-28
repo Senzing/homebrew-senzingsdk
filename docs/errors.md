@@ -7,14 +7,14 @@ causes them.
 
 `EAS_ERR_XLITERATOR_FAILED` — a transliteration module could not be loaded.
 
-```
+```text
 SENZ7426|Transliteration failed: Could not load transliterator module:
 thaiTransRules.sz - GODT031E .../opt/senzing/er/data/thaiTransRules.sz
 ```
 
 Sometimes reported in its generic form:
 
-```
+```text
 SENZ7426|EAS_ERR_XLITERATOR_FAILED: Transliteration failed:
 No transliteration rules found! Transliteration requires at least one module.
 ```
@@ -27,7 +27,7 @@ appears healthy — but *every* call through `SzEngine` or `SzDiagnostic`
 almost always `.../opt/senzing/er/data`, which does not exist. The support data
 is `er`'s **sibling**:
 
-```
+```text
 $(brew --prefix)/opt/senzing/
 ├── er/          <- SENZING_ROOT
 │   ├── etc/         -> CONFIGPATH

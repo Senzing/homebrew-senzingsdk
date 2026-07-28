@@ -78,7 +78,7 @@ export SENZING_ENGINE_CONFIGURATION_JSON='{
 **`SUPPORTPATH` is not under `SENZING_ROOT`.** `SENZING_ROOT` points at the
 `er` directory, but the support data is `er`'s *sibling*:
 
-```
+```text
 $(brew --prefix)/opt/senzing/
 ├── er/          <- SENZING_ROOT
 │   ├── etc/         -> CONFIGPATH
