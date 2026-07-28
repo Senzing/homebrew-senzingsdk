@@ -20,7 +20,7 @@ No transliteration rules found! Transliteration requires at least one module.
 ```
 
 **Symptom shape.** `SzProduct` (version, license) works fine, so the install
-appears healthy — but *every* call through `SzEngine` or `SzDiagnostic`
+appears healthy — but _every_ call through `SzEngine` or `SzDiagnostic`
 (`getEngine()`, `getDiagnostic()`, `addRecord()`) fails immediately.
 
 **Cause.** `SUPPORTPATH` points at a directory with no transliteration modules,
