@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning].
 ### Fixed
 
 - The `update-cask-version.yaml` workflow now creates signed (verified) commits via the GitHub API instead of unsigned local commits.
+- The `move-pr-to-done-dependabot.yaml` workflow now reads the project number from `vars.SENZING_GITHUB_ORGANIZATION_PROJECT`. The previous variable was not defined in the `Senzing` organization, so the project number was passed as an empty string and the job failed.
 
 ## [0.1.0] - 2026-05-28
 
