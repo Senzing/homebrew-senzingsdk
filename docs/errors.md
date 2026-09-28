@@ -41,13 +41,22 @@ Two things lead people to the wrong value:
    `${SENZING_ROOT}/resources` are correct, so `${SENZING_ROOT}/data` looks
    correct too — but `SENZING_ROOT` is the `er` directory, so it resolves to
    `er/data`.
-2. **Copying it out of the SDK's own shipped config.**
-   `er/etc/sz_engine_config.ini` and
-   `er/resources/templates/sz_engine_config.ini` both ship
-   `SUPPORTPATH=${INSTALLPATH}/senzing/er/data`. That value is wrong in the
-   packages themselves — do not copy it.
+2. **Copying it out of `sz_engine_config.ini`.** That file is a *template*,
+   not this install's config: `er/etc/sz_engine_config.ini` is a copy of
+   `er/resources/templates/sz_engine_config.ini` (byte-identical on
+   4.5.0.26245), which `sz_create_project` materializes into a project,
+   rewriting every path to that project. Unmaterialized it carries a default
+   Linux layout — and its `[SQL] CONNECTION` is an example SQLite path, not
+   yours. Do not read paths out of it, and do not edit it in place. Its values
+   have also changed across releases (4.4.x shipped
+   `SUPPORTPATH=${INSTALLPATH}/senzing/er/data`; 4.5.0.26245 ships
+   `/opt/senzing/data`), so test whether your `SUPPORTPATH` **resolves** rather
+   than matching it against any particular string.
 
-**Fix.** Point `SUPPORTPATH` at the sibling `data` directory:
+**Fix.** Set `SENZING_ENGINE_CONFIGURATION_JSON` (Senzing uses it by default
+whenever it is set, so it takes precedence over any `.ini`), or build the
+settings string your application passes to the SDK, pointing `SUPPORTPATH` at
+the sibling `data` directory:
 
 ```sh
 SUPPORTPATH="$(brew --prefix)/opt/senzing/data"
