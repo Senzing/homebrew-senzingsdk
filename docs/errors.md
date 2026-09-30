@@ -41,13 +41,14 @@ Two things lead people to the wrong value:
    `${SENZING_ROOT}/resources` are correct, so `${SENZING_ROOT}/data` looks
    correct too — but `SENZING_ROOT` is the `er` directory, so it resolves to
    `er/data`.
-2. **Copying it out of the SDK's own shipped config.**
-   `er/etc/sz_engine_config.ini` and
-   `er/resources/templates/sz_engine_config.ini` both ship
-   `SUPPORTPATH=${INSTALLPATH}/senzing/er/data`. That value is wrong in the
-   packages themselves — do not copy it.
+2. **Copying it out of `sz_engine_config.ini`.** `er/etc/sz_engine_config.ini`
+   and `er/resources/templates/sz_engine_config.ini` are templates, not this
+   install's config, and cannot be used as is. Do not read paths out of them.
 
-**Fix.** Point `SUPPORTPATH` at the sibling `data` directory:
+**Fix.** Set `SENZING_ENGINE_CONFIGURATION_JSON` (Senzing uses it by default
+whenever it is set, so it takes precedence over any `.ini`), or build the
+settings string your application passes to the SDK, pointing `SUPPORTPATH` at
+the sibling `data` directory:
 
 ```sh
 SUPPORTPATH="$(brew --prefix)/opt/senzing/data"
@@ -65,9 +66,3 @@ If that lists files, the path is correct.
 `er/data`, do not reinstall, and do not switch to Docker to work around this.
 The support data ships complete; only the path is wrong. (Symlinking Senzing
 libraries in particular causes further, harder-to-diagnose failures.)
-
-**Affected versions.** The wrong `SUPPORTPATH` in the shipped `.ini` files is
-present in at least `4.3.2.26162`, `4.3.3.26191` and `4.4.0.26206`, on both the
-production and staging channels. The native macOS install works correctly once
-`SUPPORTPATH` is set properly — verified end-to-end (`getEngine()` +
-`addRecord()`) on Apple Silicon.
