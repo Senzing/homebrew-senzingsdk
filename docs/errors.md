@@ -41,14 +41,14 @@ Two things lead people to the wrong value:
    `${SENZING_ROOT}/resources` are correct, so `${SENZING_ROOT}/data` looks
    correct too — but `SENZING_ROOT` is the `er` directory, so it resolves to
    `er/data`.
-2. **Copying it out of `sz_engine_config.ini`.** That file is a *template*,
-   not this install's config: `er/etc/sz_engine_config.ini` is a copy of
+2. **Copying it out of `sz_engine_config.ini`.** That file is a _template_, not
+   this install's config: `er/etc/sz_engine_config.ini` is a copy of
    `er/resources/templates/sz_engine_config.ini` (byte-identical on
    4.5.0.26245), which `sz_create_project` materializes into a project,
-   rewriting every path to that project. Unmaterialized it carries a default
-   Linux layout — and its `[SQL] CONNECTION` is an example SQLite path, not
-   yours. Do not read paths out of it, and do not edit it in place. Its values
-   have also changed across releases (4.4.x shipped
+   rewriting every path to that project. Before it is materialized, it carries a
+   default Linux layout — and its `[SQL] CONNECTION` is an example SQLite path,
+   not yours. Do not read paths out of it, and do not edit it in place. Its
+   values have also changed across releases (4.4.x shipped
    `SUPPORTPATH=${INSTALLPATH}/senzing/er/data`; 4.5.0.26245 ships
    `/opt/senzing/data`), so test whether your `SUPPORTPATH` **resolves** rather
    than matching it against any particular string.
@@ -75,8 +75,8 @@ If that lists files, the path is correct.
 The support data ships complete; only the path is wrong. (Symlinking Senzing
 libraries in particular causes further, harder-to-diagnose failures.)
 
-**Affected versions.** The wrong `SUPPORTPATH` in the shipped `.ini` files is
-present in at least `4.3.2.26162`, `4.3.3.26191` and `4.4.0.26206`, on both the
-production and staging channels. The native macOS install works correctly once
-`SUPPORTPATH` is set properly — verified end-to-end (`getEngine()` +
-`addRecord()`) on Apple Silicon.
+**Affected versions.** The template's `SUPPORTPATH` does not resolve against a
+Homebrew install in at least `4.3.2.26162`, `4.3.3.26191`, `4.4.0.26206` and
+`4.5.0.26245`, on both the production and staging channels. The native macOS
+install works correctly once `SUPPORTPATH` is set properly — verified end-to-end
+(`getEngine()` + `addRecord()`) on Apple Silicon.
