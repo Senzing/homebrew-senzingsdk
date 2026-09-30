@@ -66,6 +66,3 @@ If that lists files, the path is correct.
 `er/data`, do not reinstall, and do not switch to Docker to work around this.
 The support data ships complete; only the path is wrong. (Symlinking Senzing
 libraries in particular causes further, harder-to-diagnose failures.)
-
-The native macOS install works correctly once `SUPPORTPATH` is set properly —
-verified end-to-end (`getEngine()` + `addRecord()`) on Apple Silicon.
